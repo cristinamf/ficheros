@@ -1,4 +1,5 @@
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,7 +12,7 @@ public class Ejercicio3 {
 	public static void main(String[] args) {
 		DataInputStream in = null;
 		try {
-			in = new DataInputStream(new FileInputStream("C:\\Users\\Julio\\Desktop\\Programación\\tiger.bmp"));
+			in = new DataInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\Julio\\Desktop\\Programación\\saltamontes.bmp")));
 			String tipo = "";
 			tipo += (char) in.read();
 			tipo += (char) in.read();
@@ -35,15 +36,24 @@ public class Ejercicio3 {
 			System.out.println("Número de colores: " + Integer.reverseBytes(in.readInt()));
 			System.out.println("Número de colores importantes: " + Integer.reverseBytes(in.readInt()));
 			in.skip(offset - 54);
-			BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-			for (int f=height-1; f>=0; f--)
+			BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+			for (int f=height-1; f>=0; f--) {
 				for (int c=0; c<width; c++) {
 					int pixel = 0;
-					pixel += in.read();
-					pixel += in.read() << 8;
-					pixel += in.read() << 16;
+					if (colorDepth == 24) {
+						pixel |= in.read();
+						pixel |= in.read() << 8;
+						pixel |= in.read() << 16;
+						pixel |= 0xff000000;
+					}
+					else if (colorDepth == 32) {
+						pixel = Integer.reverseBytes(in.readInt() << 8);
+						pixel |= 0xff000000;
+					}
 					image.setRGB(c, f, pixel);
 				}
+				in.skip(width % 4);
+			}
 			JFrame ventana = new JFrame("Visor de BMP");
 			ventana.getContentPane().add(new Surface(image));
 			ventana.pack();
