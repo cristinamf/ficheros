@@ -1,8 +1,8 @@
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -12,7 +12,8 @@ public class Ejercicio3 {
 	public static void main(String[] args) {
 		DataInputStream in = null;
 		try {
-			in = new DataInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\Julio\\Desktop\\Programación\\saltamontes.bmp")));
+			InputStream is = Ejercicio3.class.getResourceAsStream("saltamontes.bmp");
+			in = new DataInputStream(new BufferedInputStream(is));
 			String tipo = "";
 			tipo += (char) in.read();
 			tipo += (char) in.read();
